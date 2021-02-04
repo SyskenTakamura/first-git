@@ -71,11 +71,15 @@ class TasksController extends Controller
      */
     public function show($id)
     {
-        $task = Task::findOrFail($id);
+        $task = Task::where('id', $id)->where('user_id', \Auth::id())->first();
 
-        return view('tasks.show', [
-            'task' => $task,
-        ]);
+        if (empty($task)) {
+            return back();
+        } else {
+            return view('tasks.show', [
+                'task' => $task,
+            ]);
+        }
     }
 
     /**
@@ -86,11 +90,15 @@ class TasksController extends Controller
      */
     public function edit($id)
     {
-        $task = Task::findOrFail($id);
+        $task = Task::where('id', $id)->where('user_id', \Auth::id())->first();
 
-        return view('tasks.edit', [
-            'task' => $task,
-        ]);
+        if (empty($task)) {
+            return back();
+        } else {
+            return view('tasks.edit', [
+                'task' => $task,
+            ]);
+        }
     }
 
     /**
@@ -108,13 +116,18 @@ class TasksController extends Controller
             'content' => 'required|max:255',
         ]);
 
-        $task = Task::findOrFail($id);
-        $task->status = $request->status;
-        $task->content = $request->content;
-        $task->save();
-
-        // トップページへリダイレクトさせる
-        return redirect('/');
+        $task = Task::where('id', $id)->where('user_id', \Auth::id())->first();
+        
+        if (empty($task)) {
+            return back();
+        } else {
+            $task->status = $request->status;
+            $task->content = $request->content;
+            $task->save();
+    
+            // トップページへリダイレクトさせる
+            return redirect('/');
+        }
     }
 
     /**
@@ -125,10 +138,15 @@ class TasksController extends Controller
      */
     public function destroy($id)
     {
-        $task = Task::findOrFail($id);
-        $task->delete();
+        $task = Task::where('id', $id)->where('user_id', \Auth::id())->first();
+        
+        if (empty($task)) {
+            return back();
+        } else {
+            $task->delete();
 
-        // トップページへリダイレクトさせる
-        return redirect('/');
+            // トップページへリダイレクトさせる
+            return redirect('/');
+        }
     }
 }
